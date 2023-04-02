@@ -4,7 +4,7 @@
 #include <string.h>
 #define MAZE_SIZE 6
 
-typedef struct { // ±³Ã¼!
+typedef struct { // êµì²´!
     short r;
     short c;
 } element;
@@ -46,7 +46,7 @@ void push_loc(StackType* s, int r, int c){
         push(s, tmp);
     }
 }
-// ¹Ì·Î¸¦ È­¸é¿¡ Ãâ·ÂÇÑ´Ù.
+// ë¯¸ë¡œë¥¼ í™”ë©´ì— ì¶œë ¥í•œë‹¤.
 void maze_print(char maze[MAZE_SIZE][MAZE_SIZE]) {
     printf("\n");
         for (int r = 0; r < MAZE_SIZE; r++) {
@@ -65,12 +65,12 @@ int is_full(StackType* s) {
 }
 element pop(StackType* s) {
     if (is_empty(s))
-        fprintf(stderr, "½ºÅÃ °ø¹é ¿¡·¯\n");
+        fprintf(stderr, "ìŠ¤íƒ ê³µë°± ì—ëŸ¬\n");
     return s->data[s->top--];
 }
 element peek(StackType* s) {
     if (is_empty(s))
-        fprintf(stderr, "½ºÅÃ °ø¹é ¿¡·¯\n");
+        fprintf(stderr, "ìŠ¤íƒ ê³µë°± ì—ëŸ¬\n");
     return s->data[s->top];
 }
 int main(void) {
@@ -89,12 +89,12 @@ int main(void) {
         push_loc(&s, r, c + 1);
         
         if (is_empty(&s)) {
-            printf("½ÇÆĞ\n");
+            printf("ì‹¤íŒ¨\n");
                 return 0;
         }
         else
             here = pop(&s);
     }
-    printf("¼º°ø\n");
+    printf("ì„±ê³µ\n");
     return 0;
 }
