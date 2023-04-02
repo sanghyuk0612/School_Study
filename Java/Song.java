@@ -1,45 +1,45 @@
 import java.util.Scanner;
 public class Song {
-	//ÇÊµå º¯¼ö ¼±¾ğ ºÎºĞ
+	//í•„ë“œ ë³€ìˆ˜ ì„ ì–¸ ë¶€ë¶„
 	String song_name; 
 	String singer;
 	int year;
 	String country;
 	public Song() {
-		//±âº»»ı¼ºÀÚ ÀÛ¼º
-		song_name = "¾Æ¹«³ë·¡";
-		singer = "ÁöÄÚ";
+		//ê¸°ë³¸ìƒì„±ì ì‘ì„±
+		song_name = "ì•„ë¬´ë…¸ë˜";
+		singer = "ì§€ì½”";
 		year = 1987;
-		country = "ÇÑ±¹";
+		country = "í•œêµ­";
 	}
 	public Song(String s_name, String singer1, int year1, String country1) {
-		//¸Å°³º¯¼öµéÀ» ¹Ş¾Æ¼­ »ı¼ºÀÚ¿¡ ´ëÀÔ
+		//ë§¤ê°œë³€ìˆ˜ë“¤ì„ ë°›ì•„ì„œ ìƒì„±ìì— ëŒ€ì…
 		song_name = s_name;
 		singer = singer1;
 		year = year1;
 		country = country1;
 	}
 
-	//¸Ş¼Òµå Á¤ÀÇ
+	//ë©”ì†Œë“œ ì •ì˜
 	public void show() {
-		//º¯¼öµéÀ» ¹Ş¾Æ¼­ Ãâ·Â
-		System.out.println("Song Á¤º¸ : "+year+"³â, "+country+" ±¹ÀûÀÇ "+singer+"°¡ ºÎ¸¥ \""+song_name+"\"");
+		//ë³€ìˆ˜ë“¤ì„ ë°›ì•„ì„œ ì¶œë ¥
+		System.out.println("Song ì •ë³´ : "+year+"ë…„, "+country+" êµ­ì ì˜ "+singer+"ê°€ ë¶€ë¥¸ \""+song_name+"\"");
 	}
 
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);
-		//»ı¼ºÀÚ »ı¼º
+		//ìƒì„±ì ìƒì„±
 		
-		System.out.print("³ë·¡Á¦¸ñ °¡¼ö ¹ßÇ¥³âµµ ±¹Àû ¼øÀ¸·Î Àû¾îÁÖ¼¼¿ä\n");
-		//ÀÔ·Â¹Ş´Â ºÎºĞ
+		System.out.print("ë…¸ë˜ì œëª© ê°€ìˆ˜ ë°œí‘œë…„ë„ êµ­ì  ìˆœìœ¼ë¡œ ì ì–´ì£¼ì„¸ìš”\n");
+		//ì…ë ¥ë°›ëŠ” ë¶€ë¶„
 		String S_name = scanner.nextLine();
 		String singer = scanner.nextLine();
 		int year = scanner.nextInt();
 		String country = scanner.next();
-		//»ı¼ºÀÚ ¼±¾ğ
+		//ìƒì„±ì ì„ ì–¸
 		Song info = new Song(S_name, singer , year , country);
 		Song info2 = new Song();
-		//Ãâ·Â¸Ş¼Òµå È£Ãâ
+		//ì¶œë ¥ë©”ì†Œë“œ í˜¸ì¶œ
 		info.show();
 		info2.show();
 		scanner.close();
