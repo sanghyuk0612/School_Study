@@ -49,15 +49,30 @@ void Split_list(ListNode* head, element value) {
 }
 ListNode* delete (ListNode* head, element value) {
 	ListNode* pre = (ListNode*)malloc(sizeof(ListNode));
+	if (strcmp(head->data.name, value.name) == 0) {
+		ListNode* removed;
+		removed = head; // (1)
+		head = removed->link; // (2)
+		free(removed); // (3)
+		printf("삭제 단어 : %s\n", value.name);
+		printf("삭제하려는 요소가 맨 앞에 있어서 나눌 수 없습니다.\n");
+		print_list(head);
+		return head;
+
+	}
 	for (ListNode* p = head; p != NULL; p = p->link) {
-		
-		if (strcmp(p->data.name, value.name)==0) {
-			
+
+		if (strcmp(p->data.name, value.name) == 0) {
+
 			ListNode* removed = (ListNode*)malloc(sizeof(ListNode));
 			removed = p;
 			pre->link = p->link;
 			printf("삭제 단어 : %s\n", value.name);
-			
+			if (p->link == NULL) {
+				printf("삭제하려는 요소가 맨 뒤에 있어서 나눌 수 없습니다.\n");
+				print_list(head);
+				return head;
+			}
 			Split_list(head, pre->data);
 			free(removed);
 			return head;
@@ -69,7 +84,7 @@ ListNode* delete (ListNode* head, element value) {
 
 // 테스트 프로그램
 int main(void) {
-	ListNode* head= NULL;
+	ListNode* head = NULL;
 	element data;
 	strcpy(data.name, "PEACH");
 	head = insert_first(head, data);
@@ -94,9 +109,9 @@ int main(void) {
 	print_list(head);
 
 	strcpy(data.name, "LEMON");
-	delete(head,data);
-	
-	
+	head = delete(head, data);
+
+
 
 	return 0;
 }
