@@ -6,6 +6,13 @@ typedef struct StackNode {
 	element data;
 	struct StackNode* link;
 } StackNode;
+typedef struct NumberNode {
+	float data;
+	struct NumberNode* link;
+} NumberNode;
+typedef struct {
+	NumberNode* top;
+}LinkedNumberList;
 typedef struct {
 	StackNode* top;
 } LinkedStackType;
@@ -18,6 +25,10 @@ int prec(char op) {
 	return -1;
 }
 // 초기화 함수
+void initNumber(LinkedNumberList* s)
+{
+	s->top = NULL;
+}
 void init(LinkedStackType* s)
 {
 	s->top = NULL;
@@ -26,6 +37,12 @@ void push(LinkedStackType* s, element item)
 {
 	StackNode* temp = (StackNode*)malloc(sizeof(StackNode));
 	temp->data = item;
+	temp->link = s->top;
+	s->top = temp;
+}
+void pushNumber(LinkedNumberList* s, float num) {
+	NumberNode* temp = (NumberNode*)malloc(sizeof(NumberNode));
+	temp->data = num;
 	temp->link = s->top;
 	s->top = temp;
 }
@@ -44,6 +61,7 @@ element pop(LinkedStackType* s)
 		return data;
 	}
 }
+
 // 피크함수
 element peek(LinkedStackType* s)
 {
@@ -88,7 +106,7 @@ char* infix_to_postfix(char exp[])
 		}
 	}
 	space[j] = '\0';
-	printf("%s\n", space);
+	//printf("%s\n", space);
 	int k = 0;
 	LinkedStackType s;
 	init(&s); // 스택 초기화
@@ -149,25 +167,40 @@ void print_stack(LinkedStackType* s)
 }
 int eval(char exp[])
 {
-	int op1, op2, value, i = 0;
+	float op1, op2, value;
+	int i = 0;
 	int len = strlen(exp);
 	char ch;
-	LinkedStackType s;
-	init(&s);
+	LinkedNumberList s;
+	LinkedStackType c;
+	initNumber(&s);
+
 	for (i = 0; i < len; i++) {
 		ch = exp[i];
+		int num;
+		char ch_num[100];
 		if (ch != '+' && ch != '-' && ch != '*' && ch != '/') {
-			value = ch - '0'; // 입력이 피연산자이면 why??
-			push(&s, value);
+			int j = 0;
+			while (ch != ' ') {
+				ch_num[j] = ch;
+				i++;
+				ch = exp[i];
+				j++;
+			}
+			ch_num[j] = '\0';
+			value = atof(ch_num);
+			// 입력이 피연산자이면 why??
+			pushNumber(&s, value);
+			
 		}
 		else { //연산자이면 피연산자를 스택에서 제거
 			op2 = pop(&s);
 			op1 = pop(&s);
 			switch (ch) { //연산을 수행하고 스택에 저장
-			case '+': push(&s, op1 + op2); break;
-			case '-': push(&s, op1 - op2); break;
-			case '*': push(&s, op1 * op2); break;
-			case '/': push(&s, op1 / op2); break;
+			case '+': pushNumber(&s, op1 + op2); break;
+			case '-': pushNumber(&s, op1 - op2); break;
+			case '*': pushNumber(&s, op1 * op2); break;
+			case '/': pushNumber(&s, op1 / op2); break;
 			}
 		}
 	}
@@ -183,8 +216,8 @@ int main(void)
 	printf("후위표시수식 ");
 	postfix = infix_to_postfix(s);
 	printf("%s\n", postfix);
-	//int result = eval(postfix);
-	//printf("%d",result);
+	float result = eval(postfix);
+	printf("%f",result);
 	
 	return 0;
 }
