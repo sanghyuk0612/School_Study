@@ -24,27 +24,28 @@ ListNode* insert_first(ListNode* head, element value)
 }
 void print_list(ListNode* head)
 {
-	printf("head -> ");
+
 	for (ListNode* p = head; p != NULL; p = p->link)
 		printf("%s -> ", p->data.name);
 	printf("NULL \n");
 }
 
 void Split_list(ListNode* head, element value) {
-	printf("head1 : ");
+
 	ListNode* p = head;
+	ListNode* head1;
+	ListNode* head2;
+	head1 = head;
 	while (strcmp(p->data.name, value.name) != 0) {
-		printf("%s -> ", p->data.name);
 		p = p->link;
+		head = head->link;
 	}
-	printf("%s -> ", p->data.name);
-	printf("NULL \n");
+	head2 = head->link;
+	p->link = NULL;
+	printf("head1 : ");
+	print_list(head1);
 	printf("head2 : ");
-	while (p != NULL) {
-		printf("%s -> ", p->data.name);
-		p = p->link;
-	}
-	printf("NULL \n");
+	print_list(head2);
 
 }
 ListNode* delete (ListNode* head, element value) {
@@ -66,11 +67,12 @@ ListNode* delete (ListNode* head, element value) {
 
 			ListNode* removed = (ListNode*)malloc(sizeof(ListNode));
 			removed = p;
-			pre->link = p->link;
+			pre->link = removed->link;
 			printf("삭제 단어 : %s\n", value.name);
 			if (p->link == NULL) {
 				printf("삭제하려는 요소가 맨 뒤에 있어서 나눌 수 없습니다.\n");
 				print_list(head);
+				free(removed);
 				return head;
 			}
 			Split_list(head, pre->data);
@@ -88,30 +90,29 @@ int main(void) {
 	element data;
 	strcpy(data.name, "PEACH");
 	head = insert_first(head, data);
-	print_list(head);
+
 	strcpy(data.name, "MELON");
 	head = insert_first(head, data);
-	print_list(head);
+
 	strcpy(data.name, "MANGO");
 	head = insert_first(head, data);
-	print_list(head);
+
 	strcpy(data.name, "LEMON");
 	head = insert_first(head, data);
-	print_list(head);
+
 	strcpy(data.name, "BANANA");
 	head = insert_first(head, data);
-	print_list(head);
+
 	strcpy(data.name, "KIWI");
 	head = insert_first(head, data);
-	print_list(head);
+
 	strcpy(data.name, "APPLE");
 	head = insert_first(head, data);
-	print_list(head);
 
+	printf("head -> ");
+	print_list(head);
 	strcpy(data.name, "LEMON");
 	head = delete(head, data);
-
-
 
 	return 0;
 }
