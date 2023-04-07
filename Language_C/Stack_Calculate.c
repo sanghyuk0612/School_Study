@@ -7,7 +7,7 @@ typedef struct StackNode {
 	struct StackNode* link;
 } StackNode;
 typedef struct NumberNode {
-	float data;
+	double data;
 	struct NumberNode* link;
 } NumberNode;
 typedef struct {
@@ -16,6 +16,7 @@ typedef struct {
 typedef struct {
 	StackNode* top;
 } LinkedStackType;
+
 int prec(char op) {
 	switch (op) {
 	case '(': case ')': return 0;
@@ -40,13 +41,27 @@ void push(LinkedStackType* s, element item)
 	temp->link = s->top;
 	s->top = temp;
 }
-void pushNumber(LinkedNumberList* s, float num) {
+void Numberpush(LinkedNumberList* s, double num) {
 	NumberNode* temp = (NumberNode*)malloc(sizeof(NumberNode));
 	temp->data = num;
 	temp->link = s->top;
 	s->top = temp;
 }
 // 삭제 함수
+double Numberpop(LinkedNumberList* s) {
+	if (is_Numberempty(s)) {
+		fprintf(stderr, "스택이 비어있음\n");
+		exit(1);
+	}
+	else {
+		NumberNode* temp = s->top;
+		double data = temp->data;
+		s->top = s->top->link;
+		free(temp);
+		return data;
+	}
+
+}
 element pop(LinkedStackType* s)
 {
 	if (is_empty(s)) {
@@ -137,16 +152,18 @@ char* infix_to_postfix(char exp[])
 			break;
 		}
 	}
-	while (!is_empty(&s)){ // 스택에 저장된 연산자들 출력
+	while (!is_empty(&s)) { // 스택에 저장된 연산자들 출력
 		postfix[k++] = ' ';
 		postfix[k++] = pop(&s);
-		
+
 	}
 	postfix[k] = '\0';
 	return postfix;
-	
-}
 
+}
+int is_Numberempty(LinkedNumberList* s) {
+	return (s->top == NULL);
+}
 // 공백 상태 검출 함수
 int is_empty(LinkedStackType* s)
 {
@@ -165,46 +182,48 @@ void print_stack(LinkedStackType* s)
 		printf("%d->", p->data);
 	printf("NULL \n");
 }
-int eval(char exp[])
+double eval(char exp[])
 {
-	float op1, op2, value;
+	double op1, op2, value;
 	int i = 0;
 	int len = strlen(exp);
 	char ch;
 	LinkedNumberList s;
-	LinkedStackType c;
 	initNumber(&s);
-
 	for (i = 0; i < len; i++) {
 		ch = exp[i];
+		if (ch == ' ') {
+			ch = exp[++i];
+		}
 		int num;
-		char ch_num[100];
+		char ch_num[100] = " ";
 		if (ch != '+' && ch != '-' && ch != '*' && ch != '/') {
 			int j = 0;
+			
 			while (ch != ' ') {
 				ch_num[j] = ch;
-				i++;
-				ch = exp[i];
+				ch = exp[++i];
 				j++;
 			}
 			ch_num[j] = '\0';
 			value = atof(ch_num);
-			// 입력이 피연산자이면 why??
-			pushNumber(&s, value);
-			
+			Numberpush(&s, value);
+
 		}
 		else { //연산자이면 피연산자를 스택에서 제거
-			op2 = pop(&s);
-			op1 = pop(&s);
+			op2 = Numberpop(&s);
+			op1 = Numberpop(&s);
+			
 			switch (ch) { //연산을 수행하고 스택에 저장
-			case '+': pushNumber(&s, op1 + op2); break;
-			case '-': pushNumber(&s, op1 - op2); break;
-			case '*': pushNumber(&s, op1 * op2); break;
-			case '/': pushNumber(&s, op1 / op2); break;
+			case '+': Numberpush(&s, op1 + op2); break;
+			case '-': Numberpush(&s, op1 - op2); break;
+			case '*': Numberpush(&s, op1 * op2); break;
+			case '/': Numberpush(&s, op1 / op2); break;
 			}
 		}
 	}
-	return pop(&s);
+	double result =Numberpop(&s);
+	return result;
 }
 
 // 주 함수
@@ -216,8 +235,8 @@ int main(void)
 	printf("후위표시수식 ");
 	postfix = infix_to_postfix(s);
 	printf("%s\n", postfix);
-	float result = eval(postfix);
-	printf("%f",result);
-	
+	double result = eval(postfix);
+	printf("%lf", result);
+
 	return 0;
 }
