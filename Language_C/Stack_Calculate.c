@@ -25,6 +25,12 @@ int prec(char op) {
 	}
 	return -1;
 }
+// 오류 처리 함수
+void error(char* message)
+{
+	fprintf(stderr, "error : %s\n", message);
+	exit(1);
+}
 // 초기화 함수
 void initNumber(LinkedNumberList* s)
 {
@@ -34,6 +40,7 @@ void init(LinkedStackType* s)
 {
 	s->top = NULL;
 }
+
 void push(LinkedStackType* s, element item)
 {
 	StackNode* temp = (StackNode*)malloc(sizeof(StackNode));
@@ -50,8 +57,7 @@ void Numberpush(LinkedNumberList* s, double num) {
 // 삭제 함수
 double Numberpop(LinkedNumberList* s) {
 	if (is_Numberempty(s)) {
-		fprintf(stderr, "스택이 비어있음\n");
-		exit(1);
+		error("스택이 비어있음\n");
 	}
 	else {
 		NumberNode* temp = s->top;
@@ -65,8 +71,7 @@ double Numberpop(LinkedNumberList* s) {
 element pop(LinkedStackType* s)
 {
 	if (is_empty(s)) {
-		fprintf(stderr, "스택이 비어있음\n");
-		exit(1);
+		error("스택이 비어있음\n");
 	}
 	else {
 		StackNode* temp = s->top;
@@ -76,30 +81,57 @@ element pop(LinkedStackType* s)
 		return data;
 	}
 }
-
+int check_matching(const char* in)
+{
+	StackNode s;
+	char ch, open_ch;
+	int i, n = strlen(in); // n= 문자열의 길이
+	init(&s); // 스택의 초기화
+	for (i = 0; i < n; i++) {
+		ch = in[i]; // ch = 다음 문자
+		switch (ch) {
+		case '(': case '[': case '{':
+			push(&s, ch);
+			break;
+		case ')': case ']': case '}':
+			if (is_empty(&s)) return 0;
+			else {
+				open_ch = pop(&s);
+				if ((open_ch == '(' && ch != ')') ||
+					(open_ch == '[' && ch != ']') ||
+					(open_ch == '{' && ch != '}')) {
+					return 0;
+				}
+				break;
+			}
+		}
+	}
+	if (!is_empty(&s)) return 0; // 스택에 남아있으면 오류
+	return 1;
+}
 // 피크함수
 element peek(LinkedStackType* s)
 {
-	if (is_empty(s)) {
-		fprintf(stderr, "스택이 비어있음\n");
-		exit(1);
-	}
-	else {
+	if (is_empty(s)) 
+		error("스택이 비어있음\n");
+	else 
 		return s->top->data;
-	}
 }
 char* infix_to_postfix(char exp[])
 {
-
+	
 	int i = 0;
 	char ch, top_op;
 	int len = strlen(exp);
 	char* space = (char*)malloc(sizeof(char) * 100);
 	char* postfix = (char*)malloc(sizeof(char) * 100);
-
+	
 	int j = 0;
 	for (i = 0; i < len; i++) {
 		ch = exp[i];
+		int ASCII = (int)ch;
+		if (40 > ASCII || ASCII > 57 || ASCII == 44) 
+			error("올바른 식을 작성해 주세요");
 		switch (ch) {
 		case '+': case '-': case '*': case '/':
 			space[j++] = ' ';
@@ -231,12 +263,13 @@ int main(void)
 {
 	char* s = "5*(3.5-2)+4.68/3";
 	char* postfix;
+	if (check_matching(s) != 1) 
+		error("괄호검사실패");
 	printf("중위표시수식 %s \n", s);
 	printf("후위표시수식 ");
 	postfix = infix_to_postfix(s);
 	printf("%s\n", postfix);
 	double result = eval(postfix);
-	printf("%lf", result);
-
+	printf("계산 결과: %lf", result);
 	return 0;
 }
