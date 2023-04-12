@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 typedef char element;
-//문자스택 구조체 함수
+//문자연결리스트 구조체 함수
 typedef struct StackNode {
 	element data;
 	struct StackNode* link;
 } StackNode;
-//숫자스택 구조체 정의함수
+//숫자연결리스트 구조체 정의함수
 typedef struct NumberNode {
 	double data;
 	struct NumberNode* link;
@@ -178,7 +178,7 @@ char* infix_to_postfix(char exp[])
 	char* space = to_space(exp);
 	int len = strlen(space);
 	int k = 0;
-	char* postfix = (char*)malloc(sizeof(char) * len);
+	char* postfix = (char*)malloc(sizeof(char) * len);// 메모리할당
 	LinkedStackType s;
 	init(&s); // 스택 초기화
 	for (int i = 0; i < len; i++) {
@@ -270,25 +270,25 @@ double eval(char exp[])
 	int len = strlen(exp);
 	char ch;
 	LinkedNumberList s;
-	initNumber(&s);
+	initNumber(&s); //숫자 연결리스트 생성
 	for (i = 0; i < len; i++) {
 		ch = exp[i];
-		if (ch == ' ') {
+		if (ch == ' ') { 
 			ch = exp[++i];
 		}
 		int num;
-		char ch_num[100] = " ";
-		if (ch != '+' && ch != '-' && ch != '*' && ch != '/') {
+		char* ch_num = (char*)malloc(sizeof(char) * len); // ch_num에 메모리 할당
+		if (ch != '+' && ch != '-' && ch != '*' && ch != '/') { //피연산자가 아니라면 
 			int j = 0;
 
-			while (ch != ' ') {
+			while (ch != ' ') { //공백을 기준으로 공백이 나올때까지 ch_num에 문자열 저장
 				ch_num[j] = ch;
 				ch = exp[++i];
 				j++;
 			}
 			ch_num[j] = '\0';
-			value = atof(ch_num);
-			Numberpush(&s, value);
+			value = atof(ch_num); //문자열을 float로 바꾸고 저장
+			Numberpush(&s, value); //저장한 것을 연결리스트에 push해줌
 
 		}
 		else { //연산자이면 피연산자를 스택에서 제거
