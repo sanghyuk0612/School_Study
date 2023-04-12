@@ -12,9 +12,11 @@ typedef struct NumberNode {
 	double data;
 	struct NumberNode* link;
 } NumberNode;
+//숫자연결리스트 정의함수
 typedef struct {
 	NumberNode* top;
 }LinkedNumberList;
+//문자연결리스트 정의함수
 typedef struct {
 	StackNode* top;
 } LinkedStackType;
@@ -155,10 +157,25 @@ char* to_space(char exp[]) {
 	space[j] = '\0';
 	return space;
 }
+//숫자 스택이 비었는지 확인해주는 함수
+int is_Numberempty(LinkedNumberList* s) {
+	return (s->top == NULL);
+}
+// 공백 상태 검출 함수
+int is_empty(LinkedStackType* s)
+{
+	return (s->top == NULL);
+}
+// 포화 상태 검출 함수
+int is_full(LinkedStackType* s)
+{
+	return 0;
+}
+//중위식을 후위식으로 변환해주는 함수
 char* infix_to_postfix(char exp[])
 {
 	char top_op;
-	char *space = to_space(exp);
+	char* space = to_space(exp);
 	int len = strlen(space);
 	int k = 0;
 	char* postfix = (char*)malloc(sizeof(char) * len);
@@ -201,71 +218,49 @@ char* infix_to_postfix(char exp[])
 }
 //문자열을 뒤집어 주는 함수
 char* reverse_char(char exp[]) {
-	int len = strlen(exp);
-	char* reverse = (char*)malloc(sizeof(char) * (len+1));
+	int len = strlen(exp); // 길이를 받아서 len에 저장
+	char* reverse = (char*)malloc(sizeof(char) * (len + 1));
 	for (int i = 0; i < len; i++) {
 		char ch = exp[i];
-		if (ch == '(')
+		if (ch == '(') // 뒤집으므로'('는 ')'로 변환
 			ch = ')';
-		else if (ch == ')')
+		else if (ch == ')') // 뒤집으므로 ')'는 '('로 변환
 			ch = '(';
-		reverse[len -i-1] = ch;
+		reverse[len - i - 1] = ch; //exp는 앞에서부터 뽑아온 문자를 reverse는 뒤에서부터 저장
 	}
-	reverse[len] = '\0';
+	reverse[len] = '\0'; // 마지막에 \0을 대입
 	return reverse;
 }
 //중위식을 전위식으로 변환해주는 함수
 char* infix_to_prefix(char exp[]) {
-	char* prefix = reverse_char(exp);
-	prefix = infix_to_postfix(prefix);
-	prefix = reverse_char(prefix);
+	char* prefix = reverse_char(exp); //1차적으로 뒤집어줌
+	prefix = infix_to_postfix(prefix); // 뒤집어준걸 후위식으로 변환해줌
+	prefix = reverse_char(prefix); // 그것을 다시 뒤집어줌
 	return prefix;
-}
-//숫자 스택이 비었는지 확인해주는 함수
-int is_Numberempty(LinkedNumberList* s) {
-	return (s->top == NULL);
-}
-// 공백 상태 검출 함수
-int is_empty(LinkedStackType* s)
-{
-	return (s->top == NULL);
-}
-// 포화 상태 검출 함수
-int is_full(LinkedStackType* s)
-{
-	return 0;
 }
 //식 구조 확인 함수
 void Sign_check(element exp[]) {
 	int len = strlen(exp);
 	int check = 1;
-	if (exp[0] >= 58 || exp[0] <= 47) {
+	if (exp[0] >= 58 || exp[0] <= 47) { //첫째항에 숫자가 아닌 문자가 있으면 오류함수 출력
 		error("식 구조 오류입니다.");
 	}
-	
 	for (int i = 1; i < len; i++) {
 		char ch = exp[i];
 		if ((ch < 40 || ch>57) && ch != 44)
-			error("문장구조 오류입니다.");
+			error("문장구조 오류입니다."); // 문장에 숫자나 연산자를 제외하고 다른 문자가 있으면 오류함수 출력
 		if (check == 0) {
-			if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '.')
+			if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '.') // 연산자나 . 이 연속으로 나오면 오류함수 출력
 				error("식 구조 오류입니다.");
 		}
-		if (ch=='+' || ch=='-'||ch=='*' || ch == '/' ) {
+		if (ch=='+' || ch=='-'||ch=='*' || ch == '/' || ch == '.') { //한번이라도 연산자나 . 이 나왔으면 check함수를 0으로 변경
 			check = 0;
 			continue;
 		}
-		check = 1;
+		check = 1; // 연산자나 .이아니면 check를 다시 1로 변경
 	}
 	if (check == 0)
-		error("식 구조 오류입니다.");
-}
-//스택 출력함수
-void print_stack(LinkedStackType* s)
-{
-	for (StackNode* p = s->top; p != NULL; p = p->link)
-		printf("%d->", p->data);
-	printf("NULL \n");
+		error("식 구조 오류입니다."); //마지막이 연산자나 .으로 끝났다면 오류함수 출력
 }
 //후위식 계산함수
 double eval(char exp[])
