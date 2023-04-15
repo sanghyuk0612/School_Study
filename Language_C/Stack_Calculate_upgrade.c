@@ -1,10 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+typedef struct {
+	char name[100];
+} s_element;
+typedef struct ListNode { // 노드 타입
+	s_element data;
+	struct ListNode* link;
+} ListNode;
 typedef char element;
 //문자연결리스트 구조체 함수
 typedef struct StackNode {
-	element data;
+	element* data;
 	struct StackNode* link;
 } StackNode;
 //숫자연결리스트 구조체 정의함수
@@ -12,6 +19,7 @@ typedef struct NumberNode {
 	double data;
 	struct NumberNode* link;
 } NumberNode;
+
 //숫자연결리스트 정의함수
 typedef struct {
 	NumberNode* top;
@@ -46,6 +54,26 @@ void init(LinkedStackType* s)
 {
 	s->top = NULL;
 }
+
+//문자열 push 함수
+ListNode* s_push(ListNode* head, s_element value)
+{
+	ListNode* p = (ListNode*)malloc(sizeof(ListNode)); // (1)
+	p->data = value; // (2) why? 배열 = 배열
+	p->link = head; // (3) 헤드 포인터의 값을 복사
+	head = p; // (4) 헤드 포인터 변경
+	return head;
+}
+//문자열 pop 함수
+char s_pop(ListNode* head) {
+	ListNode* removed;
+	removed = head; // (1)
+	char p[100] = { 0x00, };
+	head = removed->link; // (2)
+	sprintf(p, removed->data.name);
+	free(removed);
+	return p;
+}
 //문자스택 push함수
 void push(LinkedStackType* s, element item)
 {
@@ -73,7 +101,6 @@ double Numberpop(LinkedNumberList* s) {
 		free(temp);
 		return data;
 	}
-
 }
 //문자스택 pop함수
 element pop(LinkedStackType* s)
@@ -232,31 +259,51 @@ char* infix_to_postfix(char exp[])
 	return postfix;
 
 }
+//후위식을 중위식으로 변환해주는 함수
+char postfix_to_infix(char exp[]) {
+	ListNode* stack = NULL;
+	int len = strlen(exp);
+	char infix[100] = { 0x00, };
+	//char* op1 = (char*)malloc(sizeof(char) * len);
+	char s[100] = { 0x00, };
 
-char* postfix_to_infix(char exp[]) {
-	LinkedStackType stack;
-	int len = exp;
-	char* infix = (char*)malloc(sizeof(char) * len);
+	char op1[100] = {0x00,};
+	char op2[100] = {0x00,};
+	//char data[100] = {0x00,};
+	//s_element op2;
+	s_element data;
 	for (int i = 0; i < len; i++) {
 		char ch = exp[i];
-		if (ch==' ') {
+		if (ch == ' ') {
 			ch = exp[i++];
 		}
 		if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
-			char op2 = pop(&stack);
-			char op1 = pop(&stack);
-			char* p = (char*)malloc(sizeof(char) * len);
-
-			sprintf(p, "(%c%c%c)", op1, ch, op2);
-			sprintf(infix, "%s%s", infix, p);
-			//push(&stack, p[0]);
+			sprintf(op2, s_pop(stack));
+			sprintf(op1, s_pop(stack));
+			//op2 = s_pop(stack);
+			//op1 = s_pop(stack);
+			s_element p;
+			sprintf(s, "(%f %c %f)", op1, ch, op2);
+			strcpy(p.name,s);
+			stack = s_push(stack, p);
 		}
 		else { // 피연산자
-			push(&stack, ch);
+			char ch_num[100];
+			int j = 0;
+			while (exp[i+1] != ' ') {
+				ch = exp[++i];
+				ch_num[j] = ch;
+				j++;
+			}
+			ch_num[j] = '\0';
+			strcpy(data.name, ch_num);
+			stack = s_push(stack, data);
 		}
 	}
+	sprintf(infix, s_pop(stack));
 	return infix;
 }
+
 //중위식을 전위식으로 변환해주는 함수
 char* infix_to_prefix(char exp[]) {
 	char* prefix = reverse_char(exp); //1차적으로 뒤집어줌
@@ -355,7 +402,8 @@ int main(void)
 	printf("전위식: %s\n", prefix);
 	printf("후위식: %s\n", postfix);
 	double result = eval(postfix);
-	char* test = postfix_to_infix(postfix);
+	char test[100] = { 0x00, };
+	sprintf(test,postfix_to_infix(postfix));
 	printf("%s\n", test);
 	printf("계산 결과: %lf", result);
 	return 0;
