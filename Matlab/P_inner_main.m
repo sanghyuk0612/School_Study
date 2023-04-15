@@ -6,10 +6,3 @@ while (P_inner(a,b,n+1)- P_inner(a,b,n) >0.001)
     n=n+1; %n을 count해주는 함수
 end
 disp(n); %n이 몇일때 차이가 0.001보다 작은지 보여주는 함수
-
-
-
-
-%P_inner(a,b,100)
-%P_inner_q(3,5,100)
-

@@ -10,4 +10,3 @@ for k=1:n %반복문 선언부분
     innerSum= innerSum + dk; % innerSum변수에 구한 두 점 사이의 거리를 대입
 end
 P = innerSum; %계산이 끝난 innerSum을 P에 대입후 P반환
-
