@@ -435,7 +435,6 @@ int main(void)
 		Sign_check(infix); //변환한 infix를 구조검사를함
 		check_matching(infix);//변환한 infix를 기준으로 괄호검사를 함
 		printf("중위식: %s\n", infix);
-		printf("전위식: %s\n", prefix);
 		printf("후위식:%s\n", postfix);
 		double result = eval(postfix); //변환한 postfix를 계산
 		printf("계산 결과: %lf\n", result);
@@ -448,7 +447,7 @@ int main(void)
 		char* postfix = infix_to_postfix(infix);
 		Sign_check(infix);
 		check_matching(infix);
-		printf("중위식: %s\n", infix);
+		
 		printf("전위식: %s\n", prefix);
 		printf("후위식: %s\n", postfix);
 		double result = eval(postfix);
@@ -462,9 +461,8 @@ int main(void)
 		char* prefix = infix_to_prefix(infix);
 		Sign_check(infix);
 		check_matching(infix);
-		printf("중위식: %s\n", infix);
 		printf("전위식: %s\n", prefix);
-		printf("후위식: %s\n", postfix);
+		printf("중위식: %s\n", infix);
 		double result = eval(postfix);
 		printf("계산 결과: %lf\n", result);
 	}
