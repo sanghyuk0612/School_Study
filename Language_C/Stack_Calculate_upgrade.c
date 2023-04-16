@@ -1,19 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-typedef struct {
+typedef struct { // 문자열 요소 정의 함수
 	char name[100];
 } s_element;
+
 typedef struct ListNode { // 노드 타입
 	s_element data;
 	struct ListNode* link;
 } ListNode;
+
+typedef struct { //문자열 리스트 정의
+	ListNode* top;
+}LinkedsList;
+
 typedef char element;
 //문자연결리스트 구조체 함수
 typedef struct StackNode {
 	element* data;
 	struct StackNode* link;
 } StackNode;
+
 //숫자연결리스트 구조체 정의함수
 typedef struct NumberNode {
 	double data;
@@ -44,6 +51,11 @@ void error(char* message)
 	fprintf(stderr, "error : %s\n", message);
 	exit(1);
 }
+// 문자열스택생성 함수
+void initS(LinkedsList* s)
+{
+	s->top = NULL;
+}
 // 숫자스택생성 함수
 void initNumber(LinkedNumberList* s)
 {
@@ -56,23 +68,28 @@ void init(LinkedStackType* s)
 }
 
 //문자열 push 함수
-ListNode* s_push(ListNode* head, s_element value)
+void s_push(LinkedsList* head, s_element value)
 {
-	ListNode* p = (ListNode*)malloc(sizeof(ListNode)); // (1)
-	p->data = value; // (2) why? 배열 = 배열
-	p->link = head; // (3) 헤드 포인터의 값을 복사
-	head = p; // (4) 헤드 포인터 변경
-	return head;
+
+	ListNode* temp = (ListNode*)malloc(sizeof(ListNode));
+	strcpy(temp->data.name, value.name);
+	//temp->data = value;
+	temp->link = head->top;
+	head->top = temp;
 }
 //문자열 pop 함수
-char s_pop(ListNode* head) {
-	ListNode* removed;
-	removed = head; // (1)
-	char p[100] = { 0x00, };
-	head = removed->link; // (2)
-	sprintf(p, removed->data.name);
-	free(removed);
-	return p;
+s_element s_pop(LinkedsList* head) {
+	if (is_s_empty(head)) {
+		error("올바른 식을 입력해주세요.\n");
+	}
+	ListNode* temp = head->top;
+	s_element data;
+	//s_element data = temp->data;
+	strcpy(data.name, temp->data.name);
+	head->top = head->top->link;
+	free(temp);
+	return data;
+
 }
 //문자스택 push함수
 void push(LinkedStackType* s, element item)
@@ -117,7 +134,7 @@ element pop(LinkedStackType* s)
 	}
 }
 // 괄호검사함수
-int check_matching(const char* in)
+void check_matching(const char* in)
 {
 	StackNode s;
 	char ch, open_ch;
@@ -136,13 +153,13 @@ int check_matching(const char* in)
 				if ((open_ch == '(' && ch != ')') ||
 					(open_ch == '[' && ch != ']') ||
 					(open_ch == '{' && ch != '}')) {
-					return 0;
+					error("괄호가 잘못되었습니다.");
 				}
 				break;
 			}
 		}
 	}
-	if (!is_empty(&s)) return 0; // 스택에 남아있으면 오류
+	if (!is_empty(&s)) error("괄호가 잘못되었습니다.");; // 스택에 남아있으면 오류
 	return 1;
 }
 // 피크함수
@@ -186,6 +203,11 @@ char* to_space(char exp[]) {
 }
 //숫자 스택이 비었는지 확인해주는 함수
 int is_Numberempty(LinkedNumberList* s) {
+	return (s->top == NULL);
+}
+// 문자열 스택 공백 상태 검출 함수
+int is_s_empty(LinkedsList* s)
+{
 	return (s->top == NULL);
 }
 // 공백 상태 검출 함수
@@ -260,47 +282,46 @@ char* infix_to_postfix(char exp[])
 
 }
 //후위식을 중위식으로 변환해주는 함수
-char postfix_to_infix(char exp[]) {
-	ListNode* stack = NULL;
+char* postfix_to_infix(char exp[]) {
+	LinkedsList stack;
+	
 	int len = strlen(exp);
-	char infix[100] = { 0x00, };
-	//char* op1 = (char*)malloc(sizeof(char) * len);
-	char s[100] = { 0x00, };
-
-	char op1[100] = {0x00,};
-	char op2[100] = {0x00,};
-	//char data[100] = {0x00,};
-	//s_element op2;
+	s_element op1;
+	s_element op2;
 	s_element data;
+	initS(&stack);
 	for (int i = 0; i < len; i++) {
 		char ch = exp[i];
 		if (ch == ' ') {
-			ch = exp[i++];
+			ch = exp[++i];
 		}
 		if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
-			sprintf(op2, s_pop(stack));
-			sprintf(op1, s_pop(stack));
-			//op2 = s_pop(stack);
-			//op1 = s_pop(stack);
+			char s[100] = { 0x00, };
+			
+			strcpy(op2.name, s_pop(&stack).name); // 스택에서 pop하여 op2에 저장
+			strcpy(op1.name, s_pop(&stack).name); // 스택에서 pop하여 op1에 저장
 			s_element p;
-			sprintf(s, "(%f %c %f)", op1, ch, op2);
-			strcpy(p.name,s);
-			stack = s_push(stack, p);
+			sprintf(s, "(%s %c %s)", op1, ch, op2); //그 두개를 가운데 연산자와 함께 괄호로 묶음
+			strcpy(p.name, s); //그걸 p.name에 대입
+			s_push(&stack, p); //그것을 다시 push 해줌
 		}
 		else { // 피연산자
-			char ch_num[100];
+			char *ch_num= (char*)malloc(sizeof(char)*len);
 			int j = 0;
-			while (exp[i+1] != ' ') {
+			ch_num[j++] = exp[i];
+			while (exp[i + 1] != ' ') { // 공백이 나올때까지 ch_num에 넣어줌
 				ch = exp[++i];
 				ch_num[j] = ch;
 				j++;
 			}
-			ch_num[j] = '\0';
-			strcpy(data.name, ch_num);
-			stack = s_push(stack, data);
+			ch_num[j] = '\0'; //마지막에 '\0'대입
+			strcpy(data.name, ch_num); //그것을 data.name에 대입
+			s_push(&stack, data); // 대입한것을 다시 push해줌
 		}
 	}
-	sprintf(infix, s_pop(stack));
+	char* infix = (char*)malloc(sizeof(char)*100);
+	
+	strcpy(infix, s_pop(&stack).name); //infix라는 변수에 다시 넣어주고 반환
 	return infix;
 }
 
@@ -311,17 +332,30 @@ char* infix_to_prefix(char exp[]) {
 	prefix = reverse_char(prefix); // 그것을 다시 뒤집어줌
 	return prefix;
 }
+//전위식에서 후위식으로 변환해주는 함수
+char* prefix_to_postfix(char exp[]) {
+
+	char* postfix = reverse_char(exp); //1차적으로 뒤집어줌
+	postfix = postfix_to_infix(postfix); // 뒤집어준걸 후위식으로 변환해줌
+	postfix = reverse_char(postfix); // 그것을 다시 뒤집어줌
+	postfix = infix_to_postfix(postfix);
+	int len = strlen(exp);
+	return postfix;
+}
 //식 구조 확인 함수
 void Sign_check(element exp[]) {
 	int len = strlen(exp);
 	int check = 1;
-	if (exp[0] >= 58 || exp[0] <= 47) { //첫째항에 숫자가 아닌 문자가 있으면 오류함수 출력
-		error("식 구조 오류입니다.");
+	if (exp[0] >= 58 || exp[0] <= 47){//첫째항에 숫자나 공백이나 괄호가 아닌 문자가 있으면 오류함수 출력
+		if (exp[0] != 41 && exp[0] != 40 && exp[0] !=' ')
+			error("식 구조 오류입니다.");
 	}
 	for (int i = 1; i < len; i++) {
 		char ch = exp[i];
-		if ((ch < 40 || ch>57) && ch != 44)
-			error("문장구조 오류입니다."); // 문장에 숫자나 연산자를 제외하고 다른 문자가 있으면 오류함수 출력
+		if (ch < 40 || ch>57 || ch==44) {
+			if (ch != ' ')
+				error("문장구조 오류입니다."); // 문장에 숫자나 연산자를 제외하고 다른 문자가 있으면 오류함수 출력
+		}
 		if (check == 0) {
 			if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '.') // 연산자나 . 이 연속으로 나오면 오류함수 출력
 				error("식 구조 오류입니다.");
@@ -335,6 +369,7 @@ void Sign_check(element exp[]) {
 	if (check == 0)
 		error("식 구조 오류입니다."); //마지막이 연산자나 .으로 끝났다면 오류함수 출력
 }
+
 //후위식 계산함수
 double eval(char exp[])
 {
@@ -386,25 +421,55 @@ double eval(char exp[])
 
 // 주 함수
 int main(void)
-{
-	char* s = "5*(3.5-2)+4.68/3";
-	/*
-	char* s = (char*)malloc(sizeof(char)*100);
-	printf("식을 띄어쓰기 없이 입력해주세요 : ");
-	gets(s);
-	*/
-	Sign_check(s);
-	if (check_matching(s) != 1)
-		error("괄호검사실패");
-	char* prefix = infix_to_prefix(s);
-	char* postfix = infix_to_postfix(s);
-	printf("중위식: %s\n", s);
-	printf("전위식: %s\n", prefix);
-	printf("후위식: %s\n", postfix);
-	double result = eval(postfix);
-	char test[100] = { 0x00, };
-	sprintf(test,postfix_to_infix(postfix));
-	printf("%s\n", test);
-	printf("계산 결과: %lf", result);
+{	
+	int choice; // 선택을 받을 변수 생성
+	printf("입력 수식을 선택하세요.\n\n"); 
+	printf("1. 전 위 식 \n2. 중 위 식 \n3. 후 위 식 \n4. 종    료\n\n선    택 : ");
+	scanf("%d%*c", &choice); // scanf와 gets를 같이 쓰기 위하여 scnaf쓰고 나오는 공백을 버려줌
+	if (choice == 1) { // 선택이 1일경우 
+		char* prefix = (char*)malloc(sizeof(char) * 100);
+		printf("수식을 입력하세요 : ");
+		gets(prefix);
+		char* postfix = prefix_to_postfix(prefix);
+		char* infix = postfix_to_infix(postfix);
+		Sign_check(infix); //변환한 infix를 구조검사를함
+		check_matching(infix);//변환한 infix를 기준으로 괄호검사를 함
+		printf("중위식: %s\n", infix);
+		printf("전위식: %s\n", prefix);
+		printf("후위식:%s\n", postfix);
+		double result = eval(postfix); //변환한 postfix를 계산
+		printf("계산 결과: %lf\n", result);
+	}
+	else if (choice == 2) {
+		char* infix = (char*)malloc(sizeof(char) * 100);
+		printf("수식을 입력하세요 : ");
+		gets(infix);
+		char* prefix = infix_to_prefix(infix);
+		char* postfix = infix_to_postfix(infix);
+		Sign_check(infix);
+		check_matching(infix);
+		printf("중위식: %s\n", infix);
+		printf("전위식: %s\n", prefix);
+		printf("후위식: %s\n", postfix);
+		double result = eval(postfix);
+		printf("계산 결과: %lf\n", result);
+	}
+	else if (choice == 3) {
+		char* postfix = (char*)malloc(sizeof(char) * 100);
+		printf("수식을 입력하세요 : ");
+		gets(postfix);
+		char* infix = postfix_to_infix(postfix);
+		char* prefix = infix_to_prefix(infix);
+		Sign_check(infix);
+		check_matching(infix);
+		printf("중위식: %s\n", infix);
+		printf("전위식: %s\n", prefix);
+		printf("후위식: %s\n", postfix);
+		double result = eval(postfix);
+		printf("계산 결과: %lf\n", result);
+	}
+	
+	printf("프로그램을 종료합니다.");
 	return 0;
+	
 }
