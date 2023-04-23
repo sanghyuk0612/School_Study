@@ -50,13 +50,13 @@ void Queue_print(QueueType* q)
 }
 void rerize(QueueType *q) {
 	element temp[100]; //임시로 사용
-	int i = 0;
+	int i = 0; 
 	int j = 0;
 	if (!is_empty(q)) {
 		int i = q->front;
 		do {
 			i = (i) % (q->max_size);
-			temp[j++] = q->data[i];
+			temp[j++] = q->data[i]; // 앞에서부터 값을 순서대로 temp에 넣어줌
 			if (i == q->rear)
 				break;
 			i++;
@@ -64,13 +64,13 @@ void rerize(QueueType *q) {
 	}
 	i = 0;
 	while (i < q->max_size) {
-		q->data[i] = temp[i];
+		q->data[i] = temp[i]; //temp에 넣었던 값을 data부분에 차례대로 넣어줌
 		i++;
 	}
 	q->max_size *= 2;
-	q->front = 0;
+	q->front = 0; // front와 rear 재설정
 	q->rear = i-1;
-	q->data = (element*)realloc(q->data, q->max_size * sizeof(element));
+	q->data = (element*)realloc(q->data, q->max_size * sizeof(element)); // 메모리 늘려줌
 }
 // 삽입 함수
 void enqueue(QueueType* q, element item)
