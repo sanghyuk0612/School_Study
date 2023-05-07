@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include<string.h>
 typedef struct element { //구조체 선언
     char student_name[100];
     char phone_number[14];
@@ -21,7 +21,7 @@ TreeNode* search(TreeNode* node, char key[])
 
     if (strcmp(key, node->key.student_name) == 0)
         return node;
-    else if (strcmp(key, node->key) < 0)
+    else if (strcmp(key, node->key.student_name) < 0)
         return search(node->left, key);
     else
         return search(node->right, key);
@@ -132,14 +132,14 @@ int main(void)
         switch (ch) {
         case 'i':
             printf("이름 : ");
-            scanf("%s", &name);
+            scanf("%s", name);
             printf("전화번호 : ");
-            scanf("%s", &number);
+            scanf("%s", number);
             root = insert_node(root, name, number);
             break;
         case 's':
             printf("검색이름 : ");
-            scanf("%s", &name);
+            scanf("%s", name);
             TreeNode* temp;
             if (search(root, name) != NULL) {
                 temp = search(root, name);
@@ -157,7 +157,7 @@ int main(void)
             break;
         case 'd':
             printf("이름 : ");
-            scanf("%s", &name);
+            scanf("%s", name);
             root = delete_node(root, name);
             break;
         case 'q':
