@@ -4,10 +4,10 @@ public class Lotto {
 		Vector<Integer> v = new Vector<Integer>();
 		System.out.print("이번주 행운의 번호는 ");
 		//총 7개숫자 뽑음
-		for(int i=0; i<7; i++) { 
+		for(int i=0; i<6; i++) { 
 			//숫자를 뽑아서 n에 넣음
 			int n = (int)(Math.random()*45 + 1);
-			
+
 			while(v.indexOf(n) != (-1)) { 
 				//만약 중복된 숫자가 뽑혔으면 중복되지 않은 숫자가 나올때까지 다시 뽑음
 				n = (int)(Math.random()*45 + 1);
@@ -25,9 +25,16 @@ public class Lotto {
 				v.add(n);
 			}
 		}
+		//보너스 숫자 뽑기
+		int n = (int)(Math.random()*45 + 1);
+		while(v.indexOf(n) != (-1)) { 
+			n = (int)(Math.random()*45 + 1);
+		}
+		v.add(n);
 		for(int k=0;k<7;k++) {
 			System.out.print(v.get(k)+" ");
 		}
+
 	}
 }
 
