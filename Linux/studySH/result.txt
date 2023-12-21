@@ -1,0 +1,2 @@
+-rw-rw-r-- 1 ubuntu ubuntu 0 10월 20 05:32 test.txt
+-rw-rw-r-- 1 ubuntu ubuntu 0 10월 20 05:32 test.txt
